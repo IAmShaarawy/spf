@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -10,7 +11,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int count = 0;
+  final counterCollection = FirebaseFirestore.instance.collection("test");
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +25,17 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("You have pushed the button:"),
-            Text(
-              "$count",
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            StreamBuilder<DocumentSnapshot>(
+                stream: counterCollection.doc("counter").snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Text("Loading");
+                  }
+                  return Text(
+                    "${snapshot.data.get("value")}",
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                }),
           ],
         ),
       ),
@@ -39,9 +47,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void onFABPressed() {
-    setState(() {
-      count+=2;
-    });
+  void onFABPressed() async {
+    final counter = counterCollection.doc("counter");
+    final counterDocData = await counter.get();
+    final counterValue = (counterDocData.get("value") as int);
+    await counter.set({"value": counterValue + 1});
   }
 }

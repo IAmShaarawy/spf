@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_poultry_farm/home.dart';
+import 'package:smart_poultry_farm/screens/home.dart';
+import 'package:smart_poultry_farm/screens/splash.dart';
 
 class SPFApp extends StatelessWidget {
   @override
@@ -15,7 +16,7 @@ class SPFApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: Home(title),
+      home: Splash(),
     );
   }
 }

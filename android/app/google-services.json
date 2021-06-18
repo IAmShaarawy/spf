@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "118500852198",
+    "project_id": "fir-p-f-b0543",
+    "storage_bucket": "fir-p-f-b0543.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118500852198:android:4601976cecfe66a6771627",
+        "android_client_info": {
+          "package_name": "com.example.smart_poultry_farm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118500852198-02mhhmsljjcvqb66iab6qkl75kjqdvhb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_poultry_farm",
+            "certificate_hash": "d0bc6561453da60197f7e3be353876fe1b9280c8"
+          }
+        },
+        {
+          "client_id": "118500852198-ph6pi3u90jjb9289ugdcpf19a27eroe2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBawpvLIAaC2pWVgTCKl-Wx3F_5Fpk50t0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118500852198-ph6pi3u90jjb9289ugdcpf19a27eroe2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.smart_poultry_farm">
    <application
+        android:usesCleartextTraffic="true"
         android:label="smart_poultry_farm"
         android:icon="@mipmap/ic_launcher">
         <activity

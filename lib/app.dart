@@ -7,13 +7,13 @@ class SPFApp extends StatelessWidget {
   Widget build(BuildContext context) {
     String title ;
     if(kIsWeb){
-      title = "Flutter Demo From Web";
+      title = "SPF From Web";
     }else{
-      title = "Flutter Demo From Mobile";
+      title = "SPF From Mobile";
     }
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.green,
       ),
       home: Home(title),
     );

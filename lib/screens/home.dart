@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -11,7 +12,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final counterCollection = FirebaseFirestore.instance.collection("test");
+  final ledReference = FirebaseDatabase(
+          databaseURL:
+              "https://fir-p-f-b0543-default-rtdb.europe-west1.firebasedatabase.app/")
+      .reference()
+      .child("is_led_on");
 
   @override
   Widget build(BuildContext context) {
@@ -24,15 +29,16 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("You have pushed the button:"),
-            StreamBuilder<DocumentSnapshot>(
-                stream: counterCollection.doc("counter").snapshots(),
+            Text("ESP8266 Built in LED Status"),
+            StreamBuilder<Event>(
+                stream: ledReference.onValue,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return Text("Loading");
+                    return Text("Loading...");
                   }
+                  bool isLedOn = (snapshot.data.snapshot.value as bool);
                   return Text(
-                    "${snapshot.data.get("value")}",
+                    "${isLedOn ? "On" : "Off"}",
                     style: Theme.of(context).textTheme.headline4,
                   );
                 }),
@@ -41,16 +47,15 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: onFABPressed,
-        child: Icon(Icons.add),
-        tooltip: "Increment",
+        child: Icon(Icons.power_settings_new),
+        tooltip: "Toggle LED",
       ),
     );
   }
 
   void onFABPressed() async {
-    final counter = counterCollection.doc("counter");
-    final counterDocData = await counter.get();
-    final counterValue = (counterDocData.get("value") as int);
-    await counter.set({"value": counterValue + 1});
+    final ledSS = await ledReference.get();
+    final isLedOn = (ledSS.value as bool);
+    await ledReference.set(!isLedOn);
   }
 }

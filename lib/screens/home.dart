@@ -1,61 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_poultry_farm/screens/home_sections/hydration_section.dart';
+import 'package:smart_poultry_farm/screens/home_sections/lights_section.dart';
+import 'package:smart_poultry_farm/screens/home_sections/nutrition_section.dart';
+import 'package:smart_poultry_farm/screens/home_sections/ventilation_section.dart';
 
 class Home extends StatefulWidget {
-  final String title;
+  final DatabaseReference ventilationRef;
+  final DatabaseReference lightsRef;
+  final DatabaseReference nutritionRef;
+  final DatabaseReference hydrationRef;
 
-  Home(this.title);
+  Home({this.ventilationRef, this.lightsRef, this.nutritionRef, this.hydrationRef});
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  final ledReference = FirebaseDatabase(
-          databaseURL:
-              "https://fir-p-f-b0543-default-rtdb.europe-west1.firebasedatabase.app/")
-      .reference()
-      .child("is_led_on");
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Welcome to SPF"),
         centerTitle: true,
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
           children: [
-            Text("ESP8266 Built in LED Status"),
-            StreamBuilder<Event>(
-                stream: ledReference.onValue,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Text("Loading...");
-                  }
-                  bool isLedOn = (snapshot.data.snapshot.value as bool);
-                  return Text(
-                    "${isLedOn ? "On" : "Off"}",
-                    style: Theme.of(context).textTheme.headline4,
-                  );
-                }),
+            VentilationSection(widget.ventilationRef),
+            LightsSection(widget.lightsRef),
+            NutritionSection(widget.nutritionRef),
+            HydrationSection(widget.hydrationRef),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: onFABPressed,
-        child: Icon(Icons.power_settings_new),
-        tooltip: "Toggle LED",
-      ),
     );
-  }
-
-  void onFABPressed() async {
-    final ledSS = await ledReference.get();
-    final isLedOn = (ledSS.value as bool);
-    await ledReference.set(!isLedOn);
   }
 }

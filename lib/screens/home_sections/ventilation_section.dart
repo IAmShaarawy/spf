@@ -39,7 +39,7 @@ class VentilationSection extends StatelessWidget {
         stream: ventilationRef.child("temperature").onValue,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Text("Loading...");
-          final temp = (snapshot.data.snapshot.value as double);
+          final temp = double.parse(snapshot.data.snapshot.value as String);
           return Row(
             children: [
               Image.asset(
@@ -72,7 +72,7 @@ class VentilationSection extends StatelessWidget {
         stream: ventilationRef.child("humidity").onValue,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Text("Loading...");
-          final humidity = (snapshot.data.snapshot.value as double) * 100;
+          final humidity = double.parse(snapshot.data.snapshot.value as String) * 100;
           return Row(
             children: [
               Image.asset(
@@ -93,7 +93,7 @@ class VentilationSection extends StatelessWidget {
         stream: ventilationRef.child("air_quality").onValue,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Text("Loading...");
-          final airQuality = (snapshot.data.snapshot.value as double) * 100;
+          final airQuality = double.parse(snapshot.data.snapshot.value as String) * 100;
           return Row(
             children: [
               Image.asset(

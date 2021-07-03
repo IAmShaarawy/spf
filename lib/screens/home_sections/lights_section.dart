@@ -11,21 +11,61 @@ class LightsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: SizedBox(
-        height: 200,
-        child: Center(
-          child: StreamBuilder<Event>(
-            stream: lightsRef.child("brightness").onValue,
-            builder: (context, snapshot) {
-              if(!snapshot.hasData){
-                return Text("Loading...");
-              }
-              final brightness = (snapshot.data.snapshot.value as double)*100;
-              return Text("Lights brightness is $brightness %");
-            }
-          ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            buildBrightnessSensor(context),
+            buildBrightnessController(context)
+          ],
         ),
       ),
     );
+  }
+
+  Widget buildBrightnessSensor(BuildContext context) {
+    return StreamBuilder<Event>(
+        stream: lightsRef.child("brightness").onValue,
+        builder: (context, snapshot) {
+          if(!snapshot.hasData){
+            return Text("Loading...");
+          }
+          final brightness = double.parse(snapshot.data.snapshot.value as String)*100;
+          return Row(
+            children: [
+              Image.asset(
+                "images/brightness.png",
+                width: 32,
+              ),
+              SizedBox(
+                width: 4,
+              ),
+              Text("$brightness %")
+            ],
+          );
+        }
+    );
+  }
+
+  Widget buildBrightnessController(BuildContext context) {
+    final fanRef = lightsRef.child("is_lights_on");
+    return StreamBuilder<Event>(
+        stream: fanRef.onValue,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return Text("Loading...");
+          final isFanOn = (snapshot.data.snapshot.value as bool);
+          return Column(
+            children: [
+              Switch(
+                value: isFanOn,
+                onChanged: (isOn) async {
+                  await fanRef.set(isOn);
+                },
+              ),
+              Text("Lamp"),
+            ],
+          );
+        });
   }
 }

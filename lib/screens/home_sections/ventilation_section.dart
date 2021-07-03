@@ -44,7 +44,7 @@ class VentilationSection extends StatelessWidget {
             children: [
               Image.asset(
                 "images/thermometer.png",
-                width: 24,
+                width: 32,
               ),
               Text(
                 "$temp °C",
@@ -77,7 +77,7 @@ class VentilationSection extends StatelessWidget {
             children: [
               Image.asset(
                 "images/humidity.png",
-                width: 24,
+                width: 32,
               ),
               SizedBox(
                 width: 4,
@@ -98,7 +98,7 @@ class VentilationSection extends StatelessWidget {
             children: [
               Image.asset(
                 "images/air.png",
-                width: 24,
+                width: 32,
               ),
               SizedBox(
                 width: 4,

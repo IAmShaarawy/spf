@@ -9,8 +9,8 @@
 #include "addons/RTDBHelper.h"
 
 // WIFI
-#define WIFI_SSID "Elshaarawy_2.4G"
-#define WIFI_PASSWORD "123flowbase123"
+#define WIFI_SSID "Sacha"
+#define WIFI_PASSWORD "flowbase"
 
 // firebase paramters
 #define API_KEY "AIzaSyBawpvLIAaC2pWVgTCKl-Wx3F_5Fpk50t0"
@@ -39,25 +39,26 @@ DHT dht(DHT_PIN,DHT11); // ventilation/humidity , ventilation/temperature (repor
 #define FAN4   D7 // ventilation/is_fan3_on (observe)
 // LDR pin
 #define LDR    A0 // lights/brightness(report)
+FirebaseData fbdo;
 void setup()
 {
   Serial.begin(9600);
   initPins();
   connectToWiFi();
   connectToFirebase();
+  Serial.println("End Setup");
 }
 
 void loop() {
-  if(!Firebase.ready()){
-    return;
+  if(Firebase.ready()){
+    Serial.println("Firebase ready");
+    reportHumididty();
+    delay(3000);
+    reportTemperature();
+    delay(3000);
+    reportBrightness();
+    delay(3000);
   }
-
-  reportHumididty();
-  delay(3000);
-  reportTemperature();
-  delay(3000);
-  reportBrightness();
-  delay(3000);
 
 }
 
@@ -102,9 +103,11 @@ void connectToFirebase()
 
 // Humididty
 void reportHumididty(){
-  FirebaseData fbdo;
+  Serial.println("00000000000000000");
   String value = getHumidityLevel();
-  bool isOk =Firebase.RTDB.pushString(&fbdo, "/ventilation/humididty", value);
+  Serial.println("11111111111111111");
+  bool isOk =Firebase.RTDB.setString(&fbdo, "/ventilation/humidity", value);
+  Serial.println("22222222222222222");
   Serial.println(isOk?"Humididty OK":fbdo.errorReason().c_str());
 }
 String getHumidityLevel()
@@ -118,9 +121,8 @@ String getHumidityLevel()
 
 // Temperature
 void reportTemperature(){
-    FirebaseData fbdo;
   String value = getTemperatureLevel();
-  bool isOk =Firebase.RTDB.pushString(&fbdo, "/ventilation/temperature", value);
+  bool isOk =Firebase.RTDB.setString(&fbdo, "/ventilation/temperature", value);
   Serial.println(isOk?"Temperature OK":fbdo.errorReason().c_str());
 }
 String getTemperatureLevel()
@@ -135,16 +137,12 @@ String getTemperatureLevel()
 
 // Brightness
 void reportBrightness(){
-    FirebaseData fbdo;
   String value = getBrightnessLevel();
-  bool isOk =Firebase.RTDB.pushString(&fbdo, "/lights/brightness", value);
+  bool isOk =Firebase.RTDB.setString(&fbdo, "/lights/brightness", value);
   Serial.println(isOk?"Brightness OK":fbdo.errorReason().c_str());
 }
 String getBrightnessLevel()
 {
   float value = analogRead(LDR);
-  if(isnan(value)){
-    return "-1";
-  }
   return String(value/1023);
 }

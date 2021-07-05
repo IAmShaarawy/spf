@@ -30,22 +30,22 @@ FirebaseData stream;
 // ultrasonic pins 
 #define TRIG1  D0
 #define ECHO1  D1
-NewPing feed(TRIG1, ECHO1);
+NewPing feed(TRIG1, ECHO1);//(report)
 #define TRIG2  D2
 #define ECHO2  D3
-NewPing water(TRIG2, ECHO2);
+NewPing water(TRIG2, ECHO2);//(report)
 // servo pin
-#define SERVO_PIN  D4 //nutrition/is_tank_open
+#define SERVO_PIN  D4 //nutrition/is_tank_open //(observe)
 Servo servo;
 // pumb pin
-#define PUMB   D5 //hydration/is_tank_open
+#define PUMB   D5 //hydration/is_tank_open //(observe)
 // fans pins
-#define FAN1   D6 //ventilation/is_fan1_on
-#define FAN2   D7 //ventilation/is_fan2_on
+#define FAN1   D6 //ventilation/is_fan1_on //(observe)
+#define FAN2   D7 //ventilation/is_fan2_on //(observe)
 // buzzer pin
 #define BUZZER  D8
 // gas pin
-#define GAS    A0
+#define GAS    A0 //(report)
 
 
 

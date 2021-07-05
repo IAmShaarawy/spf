@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_list.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,8 @@ class SPFApp extends StatelessWidget {
             databaseURL:
                 "https://fir-p-f-b0543-default-rtdb.europe-west1.firebasedatabase.app/")
         .reference();
+
+    saveToken(dbRef.child("tokens"));
 
     return Home(
       ventilationRef: dbRef.child("ventilation"),
@@ -90,5 +93,16 @@ class SPFApp extends StatelessWidget {
             ));
       }
     });
+  }
+
+  void saveToken(DatabaseReference tokensRef) async{
+    final tokens =await tokensRef.once();
+    final tokensList = (tokens.value as List).cast<String>().toSet();
+    print(tokensList);
+    final token = await FirebaseMessaging.instance.getToken(
+        vapidKey:
+        "BD3rtsgI6FQw23ZCmC_T2wx4kebxE8zNMPve_ZP-HQLqZHnsePLoEy2GXTZ0FAa-c1gXbXgzyWDnpBtF0WkHzik");
+    tokensList.add(token);
+    await tokensRef.set(tokensList.toList());
   }
 }

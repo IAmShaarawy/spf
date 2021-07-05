@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "118500852198",
+    "firebase_url": "https://fir-p-f-b0543-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "fir-p-f-b0543",
     "storage_bucket": "fir-p-f-b0543.appspot.com"
   },
@@ -18,7 +19,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.smart_poultry_farm",
-            "certificate_hash": "d0bc6561453da60197f7e3be353876fe1b9280c8"
+            "certificate_hash": "dbc6561453da60197f7e3be353876fe1b92800c8"
           }
         },
         {

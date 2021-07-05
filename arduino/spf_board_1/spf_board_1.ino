@@ -46,12 +46,10 @@ void setup()
   initPins();
   connectToWiFi();
   connectToFirebase();
-  Serial.println("End Setup");
 }
 
 void loop() {
   if(Firebase.ready()){
-    Serial.println("Firebase ready");
     reportHumididty();
     delay(3000);
     reportTemperature();
@@ -103,11 +101,8 @@ void connectToFirebase()
 
 // Humididty
 void reportHumididty(){
-  Serial.println("00000000000000000");
   String value = getHumidityLevel();
-  Serial.println("11111111111111111");
   bool isOk =Firebase.RTDB.setString(&fbdo, "/ventilation/humidity", value);
-  Serial.println("22222222222222222");
   Serial.println(isOk?"Humididty OK":fbdo.errorReason().c_str());
 }
 String getHumidityLevel()

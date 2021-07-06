@@ -2,7 +2,7 @@
     package="com.example.smart_poultry_farm">
    <application
         android:usesCleartextTraffic="true"
-        android:label="smart_poultry_farm"
+        android:label="SPF"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

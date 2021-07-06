@@ -23,26 +23,19 @@
 //Define Firebase auth and config
 FirebaseAuth auth;
 FirebaseConfig config;
-FirebaseData motorStream;
-FirebaseData lightStream;
-FirebaseData fan3Stream;
-FirebaseData fan4Stream;
-
-
-// motor pins 
-#define MOTOR  D2 // cleaning 1
-#define MOTOR_REVERSE  D3 // cleaning -1 and 0 stop (observe)
-// DHT11 pin
-#define DHT_PIN    D4
-DHT dht(DHT_PIN,DHT11); // ventilation/humidity , ventilation/temperature (report)
-// light pin
-#define LIGHT   D5 // lights/is_lights_on (observe)
-// fans pins
-#define FAN3   D6 // ventilation/is_fan3_on (observe)
-#define FAN4   D7 // ventilation/is_fan4_on (observe)
-// LDR pin
-#define LDR    A0 // lights/brightness(report)
 FirebaseData fbdo;
+FirebaseData fan1Stream;
+FirebaseData fan2Stream;
+FirebaseData fan3Stream;
+
+
+// DHT11 pin
+#define DHT_PIN    D0
+DHT dht(DHT_PIN,DHT11); // ventilation/humidity , ventilation/temperature (report)
+// fans pins
+#define FAN1   D1 // ventilation/is_fan1_on (observe)
+#define FAN2   D2 // ventilation/is_fan2_on (observe)
+#define FAN3   D3 // ventilation/is_fan3_on (observe)
 void setup()
 {
   Serial.begin(9600);
@@ -58,22 +51,16 @@ void loop() {
     delay(3000);
     reportTemperature();
     delay(3000);
-    reportBrightness();
-    delay(3000);
   }
 
 }
 
 void initPins()
 {
-  pinMode (MOTOR,OUTPUT);
-  pinMode (MOTOR_REVERSE,OUTPUT);
   dht.begin();
-  pinMode (LIGHT,OUTPUT);
+  pinMode (FAN1,OUTPUT);
+  pinMode (FAN2,OUTPUT);
   pinMode (FAN3,OUTPUT);
-  pinMode (FAN4,OUTPUT);
-  pinMode (LDR,INPUT);
-
 }
 
 void connectToWiFi()
@@ -107,7 +94,7 @@ void connectToFirebase()
 void reportHumididty(){
   String value = getHumidityLevel();
   bool isOk =Firebase.RTDB.setString(&fbdo, "/ventilation/humidity", value);
-  Serial.println(isOk?"Humididty OK":fbdo.errorReason().c_str());
+  Serial.println(isOk?"Humididty Reported":fbdo.errorReason().c_str());
 }
 String getHumidityLevel()
 {
@@ -122,7 +109,7 @@ String getHumidityLevel()
 void reportTemperature(){
   String value = getTemperatureLevel();
   bool isOk =Firebase.RTDB.setString(&fbdo, "/ventilation/temperature", value);
-  Serial.println(isOk?"Temperature OK":fbdo.errorReason().c_str());
+  Serial.println(isOk?"Temperature Reported":fbdo.errorReason().c_str());
 }
 String getTemperatureLevel()
 {
@@ -133,80 +120,54 @@ String getTemperatureLevel()
   return String(temp);
 }
 
-
-// Brightness
-void reportBrightness(){
-  String value = getBrightnessLevel();
-  bool isOk =Firebase.RTDB.setString(&fbdo, "/lights/brightness", value);
-  Serial.println(isOk?"Brightness OK":fbdo.errorReason().c_str());
-}
-String getBrightnessLevel()
+void beginStreaming()
 {
-  float value = analogRead(LDR);
-  return String(value/1023);
-}
 
-void beginStreaming(){
-  if (!Firebase.RTDB.beginStream(&motorStream, "/cleaning")){
-    Serial.printf("motor sream begin error, %s\n\n", motorStream.errorReason().c_str());
+  if (!Firebase.RTDB.beginStream(&fan1Stream, "/ventilation/is_fan1_on")){
+    Serial.printf("sream begin error, %s\n\n", fan1Stream.errorReason().c_str());
   }
-  Firebase.RTDB.setStreamCallback(&motorStream, motorCallback, motorStreamTimeoutCallback);
+  Firebase.RTDB.setStreamCallback(&fan1Stream, fan1Callback, fan1StreamTimeoutCallback);
 
-  if (!Firebase.RTDB.beginStream(&lightStream, "/lights/is_lights_on")){
-    Serial.printf("light sream begin error, %s\n\n", lightStream.errorReason().c_str());
+  if (!Firebase.RTDB.beginStream(&fan2Stream, "/ventilation/is_fan2_on")){
+    Serial.printf("sream begin error, %s\n\n", fan2Stream.errorReason().c_str());
   }
-  Firebase.RTDB.setStreamCallback(&lightStream, lightsCallback, lightsStreamTimeoutCallback);
-
-
+  Firebase.RTDB.setStreamCallback(&fan2Stream, fan2Callback, fan2StreamTimeoutCallback);
+  
   if (!Firebase.RTDB.beginStream(&fan3Stream, "/ventilation/is_fan3_on")){
     Serial.printf("sream begin error, %s\n\n", fan3Stream.errorReason().c_str());
   }
   Firebase.RTDB.setStreamCallback(&fan3Stream, fan3Callback, fan3StreamTimeoutCallback);
-
-   if (!Firebase.RTDB.beginStream(&fan4Stream, "/ventilation/is_fan4_on")){
-    Serial.printf("sream begin error, %s\n\n", fan4Stream.errorReason().c_str());
-  }
-  Firebase.RTDB.setStreamCallback(&fan4Stream, fan4Callback, fan4StreamTimeoutCallback);
   
 }
 ////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////MOTOR////////////////////////////////////
+///////////////////////////////////////FAN3////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-void motorCallback(FirebaseStream data)
-{
-  int flag = data.intData();
-  if(flag==1){
-    digitalWrite(MOTOR_REVERSE, LOW);
-    delay(2000);
-    digitalWrite(MOTOR, HIGH);
-  }else if(flag==-1){
-    digitalWrite(MOTOR, LOW);
-    delay(2000);
-    digitalWrite(MOTOR_REVERSE, HIGH);
-  }else{
-    digitalWrite(MOTOR, LOW);
-    digitalWrite(MOTOR_REVERSE, LOW);
-  }
-}
-
-void motorStreamTimeoutCallback(bool timeout)
-{
-  if (timeout)
-    Serial.println("Motor stream timeout, resuming...\n");
-}
-////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////LIGHTS////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-void lightsCallback(FirebaseStream data)
+void fan1Callback(FirebaseStream data)
 {
   int isOn = data.boolData();
-  digitalWrite(LIGHT, isOn?HIGH:LOW);
+  Serial.println(isOn?"FAN1 IS ON":"FAN1 IS OFF");
+  digitalWrite(FAN1, isOn?HIGH:LOW);
 }
 
-void lightsStreamTimeoutCallback(bool timeout)
+void fan1StreamTimeoutCallback(bool timeout)
 {
   if (timeout)
-    Serial.println("lights stream timeout, resuming...\n");
+    Serial.println("Fan1 stream timeout, resuming...\n");
+}
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////FAN4////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void fan2Callback(FirebaseStream data)
+{
+  int isOn = data.boolData();
+  Serial.println(isOn?"FAN2 IS ON":"FAN2 IS OFF");
+  digitalWrite(FAN2, isOn?HIGH:LOW);
+}
+
+void fan2StreamTimeoutCallback(bool timeout)
+{
+  if (timeout)
+    Serial.println("Fan2 stream timeout, resuming...\n");
 }
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////FAN3////////////////////////////////////
@@ -214,6 +175,7 @@ void lightsStreamTimeoutCallback(bool timeout)
 void fan3Callback(FirebaseStream data)
 {
   int isOn = data.boolData();
+  Serial.println(isOn?"FAN3 IS ON":"FAN3 IS OFF");
   digitalWrite(FAN3, isOn?HIGH:LOW);
 }
 
@@ -221,18 +183,4 @@ void fan3StreamTimeoutCallback(bool timeout)
 {
   if (timeout)
     Serial.println("Fan3 stream timeout, resuming...\n");
-}
-////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////FAN4////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-void fan4Callback(FirebaseStream data)
-{
-  int isOn = data.boolData();
-  digitalWrite(FAN4, isOn?HIGH:LOW);
-}
-
-void fan4StreamTimeoutCallback(bool timeout)
-{
-  if (timeout)
-    Serial.println("Fan4 stream timeout, resuming...\n");
 }

@@ -1,8 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_list.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:smart_poultry_farm/screens/home.dart';
@@ -48,6 +46,7 @@ class SPFApp extends StatelessWidget {
     return Home(
       ventilationRef: dbRef.child("ventilation"),
       lightsRef: dbRef.child("lights"),
+      cleaningRef: dbRef.child("cleaning"),
       nutritionRef: dbRef.child("nutrition"),
       hydrationRef: dbRef.child("hydration"),
     );
@@ -95,13 +94,13 @@ class SPFApp extends StatelessWidget {
     });
   }
 
-  void saveToken(DatabaseReference tokensRef) async{
-    final tokens =await tokensRef.once();
+  void saveToken(DatabaseReference tokensRef) async {
+    final tokens = await tokensRef.once();
     final tokensList = (tokens.value as List).cast<String>().toSet();
     print(tokensList);
     final token = await FirebaseMessaging.instance.getToken(
         vapidKey:
-        "BD3rtsgI6FQw23ZCmC_T2wx4kebxE8zNMPve_ZP-HQLqZHnsePLoEy2GXTZ0FAa-c1gXbXgzyWDnpBtF0WkHzik");
+            "BD3rtsgI6FQw23ZCmC_T2wx4kebxE8zNMPve_ZP-HQLqZHnsePLoEy2GXTZ0FAa-c1gXbXgzyWDnpBtF0WkHzik");
     tokensList.add(token);
     await tokensRef.set(tokensList.toList());
   }

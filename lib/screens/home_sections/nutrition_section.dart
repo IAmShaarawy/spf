@@ -11,11 +11,20 @@ class NutritionSection extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
           children: [
-            buildHydrationSensors(context),
-            buildHydrationController(context)
+            Text(
+              "Nutrition",
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            SizedBox(height: 16,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                buildHydrationSensors(context),
+                buildHydrationController(context)
+              ],
+            ),
           ],
         ),
       ),

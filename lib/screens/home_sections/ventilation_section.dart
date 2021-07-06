@@ -1,5 +1,4 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class VentilationSection extends StatelessWidget {
@@ -10,12 +9,18 @@ class VentilationSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: SizedBox(
-        height: 200,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            Text(
+              "Ventilation",
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            SizedBox(height: 32,),
             buildSensorsSection(context),
+            SizedBox(height: 16,),
             buildControllersSection(context)
           ],
         ),
@@ -115,6 +120,8 @@ class VentilationSection extends StatelessWidget {
       children: [
         buildFan1Controller(),
         buildFan2Controller(),
+        buildFan3Controller(),
+        buildFan4Controller(),
       ],
     );
   }
@@ -156,6 +163,48 @@ class VentilationSection extends StatelessWidget {
                 },
               ),
               Text("Fan2"),
+            ],
+          );
+        });
+  }
+
+  Widget buildFan3Controller() {
+    final fanRef = ventilationRef.child("is_fan3_on");
+    return StreamBuilder<Event>(
+        stream: fanRef.onValue,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return Text("Loading...");
+          final isFanOn = (snapshot.data.snapshot.value as bool);
+          return Column(
+            children: [
+              Switch(
+                value: isFanOn,
+                onChanged: (isOn) async {
+                  await fanRef.set(isOn);
+                },
+              ),
+              Text("Fan3"),
+            ],
+          );
+        });
+  }
+
+  Widget buildFan4Controller() {
+    final fanRef = ventilationRef.child("is_fan4_on");
+    return StreamBuilder<Event>(
+        stream: fanRef.onValue,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return Text("Loading...");
+          final isFanOn = (snapshot.data.snapshot.value as bool);
+          return Column(
+            children: [
+              Switch(
+                value: isFanOn,
+                onChanged: (isOn) async {
+                  await fanRef.set(isOn);
+                },
+              ),
+              Text("Fan4"),
             ],
           );
         });

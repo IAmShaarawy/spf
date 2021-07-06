@@ -42,7 +42,7 @@ Servo servo;
 // pumb pin
 #define PUMB   D5 //hydration/is_tank_open //(observe)
 // buzzer pin
-#define BUZZER  D8
+#define BUZZER  D6
 // gas pin
 #define GAS    A0 //(report)
 
@@ -138,7 +138,8 @@ void reportGas(){
 }
 String getGasLevel()
 {
-  float value = analogRead(GAS);
+  float value = analogRead(GAS)/1023;
+  digitalWrite(BUZZER, value>=0.5?HIGH:LOW);
   return String(value/1023);
 }
 

@@ -124,17 +124,17 @@ void beginStreaming()
 {
 
   if (!Firebase.RTDB.beginStream(&fan1Stream, "/ventilation/is_fan1_on")){
-    Serial.printf("sream begin error, %s\n\n", fan1Stream.errorReason().c_str());
+    Serial.printf("fan1 begin error, %s\n\n", fan1Stream.errorReason().c_str());
   }
   Firebase.RTDB.setStreamCallback(&fan1Stream, fan1Callback, fan1StreamTimeoutCallback);
 
   if (!Firebase.RTDB.beginStream(&fan2Stream, "/ventilation/is_fan2_on")){
-    Serial.printf("sream begin error, %s\n\n", fan2Stream.errorReason().c_str());
+    Serial.printf("fan2 begin error, %s\n\n", fan2Stream.errorReason().c_str());
   }
   Firebase.RTDB.setStreamCallback(&fan2Stream, fan2Callback, fan2StreamTimeoutCallback);
   
   if (!Firebase.RTDB.beginStream(&fan3Stream, "/ventilation/is_fan3_on")){
-    Serial.printf("sream begin error, %s\n\n", fan3Stream.errorReason().c_str());
+    Serial.printf("fan3 begin error, %s\n\n", fan3Stream.errorReason().c_str());
   }
   Firebase.RTDB.setStreamCallback(&fan3Stream, fan3Callback, fan3StreamTimeoutCallback);
   

@@ -24,7 +24,9 @@
 //Define Firebase auth and config
 FirebaseAuth auth;
 FirebaseConfig config;
-FirebaseData stream;
+FirebaseData fbdo;
+FirebaseData feedStream;
+FirebaseData waterStream;
 
 
 // ultrasonic pins 
@@ -53,18 +55,24 @@ void setup()
   initPins();
   connectToWiFi();
   connectToFirebase();
+  beginStreaming();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  if(Firebase.ready()){
+    reportFeed();
+    delay(3000);
+    reportWater();
+    delay(3000);
+    reportGas();
+    delay(3000);
+  }
 
 }
 
 void initPins()
 {
   pinMode (PUMB,OUTPUT);
-  pinMode (FAN1,OUTPUT);
-  pinMode (FAN2,OUTPUT);
   pinMode (BUZZER,OUTPUT);
   pinMode (GAS,INPUT);
   servo.attach(SERVO_PIN);
@@ -95,4 +103,83 @@ void connectToFirebase()
   config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
+}
+
+
+// Feed
+void reportFeed(){
+  String value = getFeedLevel();
+  bool isOk =Firebase.RTDB.setString(&fbdo, "/nutrition/food_level", value);
+  Serial.println(isOk?"Feed Level Reported":fbdo.errorReason().c_str());
+}
+String getFeedLevel()
+{
+  float value = feed.ping_cm();
+  return String(value/20);
+}
+
+// Water
+void reportWater(){
+  String value = getWaterLevel();
+  bool isOk =Firebase.RTDB.setString(&fbdo, "/hydration/water_level", value);
+  Serial.println(isOk?"Water Level Reported":fbdo.errorReason().c_str());
+}
+String getWaterLevel()
+{
+  float value = water.ping_cm();
+  return String(value/13);
+}
+
+// gas
+void reportGas(){
+  String value = getGasLevel();
+  bool isOk =Firebase.RTDB.setString(&fbdo, "/ventilation/air_quality", value);
+  Serial.println(isOk?"Gas Level Reported":fbdo.errorReason().c_str());
+}
+String getGasLevel()
+{
+  float value = analogRead(GAS);
+  return String(value/1023);
+}
+
+void beginStreaming(){
+  if (!Firebase.RTDB.beginStream(&feedStream, "/nutrition/is_tank_open")){
+    Serial.printf("feed sream begin error, %s\n\n", feedStream.errorReason().c_str());
+  }
+  Firebase.RTDB.setStreamCallback(&feedStream, feedCallback, feedStreamTimeoutCallback);
+
+  if (!Firebase.RTDB.beginStream(&waterStream, "/hydration/is_tank_open")){
+    Serial.printf("water sream begin error, %s\n\n", waterStream.errorReason().c_str());
+  }
+  Firebase.RTDB.setStreamCallback(&waterStream, waterCallback, waterStreamTimeoutCallback);
+}
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////FEED////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void feedCallback(FirebaseStream data)
+{
+  int isOn = data.boolData();
+  Serial.println(isOn?"FEED IS ON":"FEED IS OFF");
+  servo.write(isOn?180:0);
+}
+
+void feedStreamTimeoutCallback(bool timeout)
+{
+  if (timeout)
+    Serial.println("Motor stream timeout, resuming...\n");
+}
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////WATER////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void waterCallback(FirebaseStream data)
+{
+  int isOn = data.boolData();
+  Serial.println(isOn?"WATER IS ON":"WATER IS OFF");
+  digitalWrite(PUMB, isOn?HIGH:LOW);
+}
+
+void waterStreamTimeoutCallback(bool timeout)
+{
+  if (timeout)
+    Serial.println("lights stream timeout, resuming...\n");
 }
